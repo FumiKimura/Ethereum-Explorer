@@ -1,0 +1,13 @@
+version: "3"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    extra_hosts:
+      - "host.docker.internal:192.168.150.53"
+    image: ethereum-explorer
+    container_name: ethereum-explorer
+    ports:
+      - 9000:9000
+    command: [sh, -c, npm install && npm run start-app]

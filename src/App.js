@@ -5,29 +5,18 @@ import { useEffect, useState } from 'react';
 
 function App() {
 
-  const [testData, setTestDate] = useState(null);
+  const [testData, setTestData] = useState(null);
 
   useEffect(async ()=> {
-    const data = await axios.get("http://localhost:9000/test/", { 
-      withCredentials: true
-    });
-    setTestDate(data);
+    const data = await axios.get("https://express-server-p6vwemgmtq-uc.a.run.app/ethereum");
+    console.log({data});
+    setTestData(data.data);
   },[])
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p> { testData } </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Hello from Frontend</h1>
+      { testData }
     </div>
   );
 }

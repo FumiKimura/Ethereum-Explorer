@@ -6,35 +6,58 @@ const cors = require('cors');
 const prisma = new PrismaClient();
 const app = express();
 
+app.use(cors());
 app.use(express.static(path.resolve(__dirname, "../build")));
 
-app.use(cors({ credentials: true }));
+//CRUD endpoints for database
+app.get("/alladdress", async (req, res) => {
+    const addresses = await prisma.address.findMany();
+    res.send(addresses);
+});
 
-app.get("/test", async (req, res) => {
-    const test = await prisma.address.findMany();
-    res.send(test);
+app.get("/address/:id", async (req, res) => {
+    const address = await prisma.address.findUnique({
+        where:{
+            id: parseInt(req.params.id)
+        }
+    })
+    res.send(address);
+});
+
+app.post("/address/:newaddress", async (req, res) => {
+    const newAddress = await prisma.address.create({
+        data:{
+            address: req.params.newaddress
+        }
+    })
+    res.send(newAddress);
+});
+
+app.patch("/address/:id/:newaddress", async (req, res) => {
+    const updateAddress = await prisma.address.update({
+        where:{
+            id:parseInt(req.params.id)
+        },
+        data:{
+            address: req.params.newaddress
+        }
+    });
+    res.send(updateAddress);
+});
+
+app.delete("/address/:id", async (req, res) => {
+    const deleteAddress = await prisma.address.delete({
+        where:{
+            id:parseInt(req.params.id)
+        }
+    });
+    res.send(deleteAddress);
+});
+
+//Query for Ethereum blockchain data
+app.get("/ethereum", async (req, res) => {
+    res.send("Hello from Server");
 })
-
-
-app.get("/address/addressById", (req, res) => {
-    
-});
-
-app.get("/address/allAddress", (req, res) => {
-    
-});
-
-app.post("/address/newAddress", (req, res) => {
-    
-});
-
-app.patch("/address/updateAddress", (req, res) => {
-    
-});
-
-app.delete("/address/deleteAddress", (req, res) => {
-    
-});
 
 app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "../build", "index.html"));

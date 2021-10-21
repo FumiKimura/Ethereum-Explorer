@@ -20,8 +20,9 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "server": "node server/index.js",
-    "backend:hack": "nodemon server/index.js",
+    "start-app": "npm run build && npm run server",
+    "server": "node -r dotenv/config server/index.js",
+    "backend:hack": "npm run build && nodemon server/index.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
