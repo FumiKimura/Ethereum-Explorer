@@ -13,10 +13,41 @@ function App() {
     setTestData(data.data);
   },[])
 
+  useEffect(() => {
+    setInterval(() => {
+      console.log("outputting from interval");
+    }, 60000)
+  }, [])
+
   return (
     <div className="App">
-      <h1>Hello from Frontend</h1>
+      <h1>Ether Finder</h1>
       { testData }
+      <select name="endpoint" id="dropdown">
+        <option value="">GET All Addresses</option>
+        <option value="">GET Address By ID#</option>
+        <option value="">POST New Address</option>
+        <option value="">UPDATE Address</option>
+        <option value="">DELETE Address</option>
+      </select>
+      <input></input>
+      <input className="submit-btn" type="submit"></input>
+      
+      <div className="blocks">
+      <h3>Latest Blocks</h3>
+        <div>
+          <h2 className="block">Block T-0</h2>
+        </div>
+        <div>
+          <h2 className="block">Block T-1</h2>
+        </div>
+        <div>
+          <h2 className="block">Block T-2</h2>
+        </div>
+        <div>
+          <h2 className="block">Block T-3</h2>
+        </div>
+      </div>
     </div>
   );
 }

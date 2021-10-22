@@ -20,7 +20,7 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "start-app": "npx prisma migrate deploy && npx prisma db seed && npm run build && npm run server",
+    "start-app": "npx prisma migrate deploy && npm run build && npm run server",
     "server": "node -r dotenv/config server/index.js",
     "backend:hack": "npm run build && nodemon server/index.js",
     "start": "react-scripts start",
