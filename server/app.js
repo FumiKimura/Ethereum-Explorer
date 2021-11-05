@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const { PrismaClient } = require('@prisma/client');
 const cors = require('cors');
+const axios = require('axios');
 
 const prisma = new PrismaClient();
 const app = express();
@@ -55,8 +56,76 @@ app.delete("/address/:id", async (req, res) => {
 });
 
 //Query for Ethereum blockchain data
-app.get("/ethereum", async (req, res) => {
-    res.send("Hello from Server");
+app.get("/ethereum/latest", async (req, res) => {
+    const data = await axios.post('https://mainnet.infura.io/v3/b0b3157f5e7c420dbb454144ea397263', {
+        "id": 1337,
+        "jsonrpc": "2.0",
+        "method": "eth_blockNumber",
+        "params": []
+      });
+    res.send(data.data);
+});  
+
+app.get("/ethereum/latest/setup", async (req, res) => {
+    const blockNums = [];
+    const latestBlock = await axios.post('https://mainnet.infura.io/v3/b0b3157f5e7c420dbb454144ea397263', {
+        "id": 1337,
+        "jsonrpc": "2.0",
+        "method": "eth_blockNumber",
+        "params": []
+    });
+
+    const latestBlockNum = parseInt(latestBlock.data.result);
+    let nextBlockNum = latestBlockNum;
+
+    for(let i = 0; i < 5; i++){
+        nextBlockNum -= i
+        let nextBlockBinary = `0x${nextBlockNum.toString(16)}`;
+        blockNums.push(axios.post('https://mainnet.infura.io/v3/b0b3157f5e7c420dbb454144ea397263', {
+            "id": 1337,
+            "jsonrpc": "2.0",
+            "method": "eth_getBlockByNumber",
+            "params": [nextBlockBinary, true]
+        }))
+    }
+    Promise.all(blockNums).then((arr)=>{
+        res.send(arr.map((block)=>block.data.result));
+    })
+});  
+
+app.get("/ethereum/latest/:blocknum", async (req, res) => {
+    const { blocknum } = req.params.blocknum;
+    const blocks = [];
+
+    res.send("in the server");
+    // const latestBlockNum = await axios.post('https://mainnet.infura.io/v3/b0b3157f5e7c420dbb454144ea397263', {
+    //     "id": 1337,
+    //     "jsonrpc": "2.0",
+    //     "method": "eth_blockNumber",
+    //     "params": []
+    // });
+
+    // let i = 0;
+    // let nextBlock = latestBlockNum.data.result;
+    // res.send(parsInt(nextBlock));
+    // // while(nextBlock !== blocknum){
+    //     nextBlock = (parseInt(latestBlockNum.data.result) - i).toString(16);
+    //     console.log(nextBlock);
+    //     const latestBlockData = await axios.post('https://mainnet.infura.io/v3/b0b3157f5e7c420dbb454144ea397263', {
+    //         "id": 1337,
+    //         "jsonrpc": "2.0",
+    //         "method": "eth_getBlockByNumber",
+    //         "params": [nextBlock, true]
+    //     })
+
+    //     blocks.push(latestBlockData.data.result);
+    //     i++;
+    // }
+
+    // Promise.all(blocks).then((arr)=>{
+    //     res.send(arr.map((block)=> block.data.result));
+    // })
+    // res.send(latestBlockData);
 })
 
 app.get("*", (req, res) => {

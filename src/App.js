@@ -1,52 +1,101 @@
-import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
 function App() {
 
-  const [testData, setTestData] = useState(null);
-
-  useEffect(async ()=> {
-    const data = await axios.get("https://express-server-p6vwemgmtq-uc.a.run.app/ethereum");
-    console.log({data});
-    setTestData(data.data);
-  },[])
-
-  useEffect(() => {
-    setInterval(() => {
-      console.log("outputting from interval");
-    }, 60000)
+  const [blocks, setBlocks] = useState([]);
+  const [path, setPath] = useState("all");
+  const [id, setId] = useState(0);
+  
+  useEffect( async () => { 
+    await ethBlocks();
+    await autoupdate();
+    console.log("end of use effect");
   }, [])
+
+  async function ethBlocks(){
+    //initial setup
+    const firstTenBlocks = await axios.get("https://ethereum-explorer-p6vwemgmtq-an.a.run.app/ethereum/latest/setup");
+    setBlocks(firstTenBlocks.data);
+  }
+
+  async function autoupdate(){
+    setInterval(async () => {
+      console.log("setInterval is working");
+      console.log(blocks);
+      console.log(parseInt(blocks[0]));
+      const data = await axios.get(`http://localhost:9000/ethereum/latest/:${blocks[0].number}`);
+      console.log(data.data);
+    }, 20000);
+  }
+
+  
+  async function handleSubmit(event){
+    let response;
+    event.preventDefault();
+    switch (path) {
+      case 'all':
+        console.log("all");
+        response = await axios.get("https://ethereum-explorer-p6vwemgmtq-an.a.run.app/alladdress");
+        break;
+      case 'get':
+        console.log("get");
+        response = await axios.get(`https://ethereum-explorer-p6vwemgmtq-an.a.run.app/${id}`);
+        break;
+      case 'post':
+        console.log("post");
+        response = await axios.post(`https://ethereum-explorer-p6vwemgmtq-an.a.run.app/address/${id}`)
+        break;
+      case 'update':
+        console.log("update");
+        response = await axios.patch(`https://ethereum-explorer-p6vwemgmtq-an.a.run.app/${id}`);
+        break;
+      case 'delete':
+        console.log("delete");
+        response = await axios.delete(`https://ethereum-explorer-p6vwemgmtq-an.a.run.app/address/${id}`);
+        break;
+    }
+    console.log(response);
+  }
+
+  function handlePathChange(event){
+    setPath(event.target.value);
+  }
+
+  function handleIdChange(event){
+    setId(event.target.value);
+  }
 
   return (
     <div className="App">
       <h1>Ether Finder</h1>
-      { testData }
-      <select name="endpoint" id="dropdown">
-        <option value="">GET All Addresses</option>
-        <option value="">GET Address By ID#</option>
-        <option value="">POST New Address</option>
-        <option value="">UPDATE Address</option>
-        <option value="">DELETE Address</option>
-      </select>
-      <input></input>
-      <input className="submit-btn" type="submit"></input>
+
+      <form onSubmit={handleSubmit}>
+          <select onChange={handlePathChange}>
+            <option value="all">GET All Addresses</option>
+            <option value="get">GET Address By ID#</option>
+            <option value="post">POST New Address</option>
+            <option value="update">UPDATE Address</option>
+            <option value="delete">DELETE Address</option>
+          </select>
+          <input type="text" onChange={handleIdChange}/>
+        <input type="submit" value="Submit"/>
+      </form>
       
       <div className="blocks">
       <h3>Latest Blocks</h3>
-        <div>
-          <h2 className="block">Block T-0</h2>
-        </div>
-        <div>
-          <h2 className="block">Block T-1</h2>
-        </div>
-        <div>
-          <h2 className="block">Block T-2</h2>
-        </div>
-        <div>
-          <h2 className="block">Block T-3</h2>
-        </div>
+        {blocks.map(block => {
+          console.log(block);
+          return <div
+            className="block"
+          >
+            <a href={`https://etherscan.io/block/${parseInt(block.number)}`}
+            >Block#: {parseInt(block.number)}</a>
+            <p>Miner: {parseInt(block.miner)}</p>
+            <p>Difficulty: {block.miner}</p>
+          </div>
+        })}
       </div>
     </div>
   );

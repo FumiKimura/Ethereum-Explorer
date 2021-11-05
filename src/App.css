@@ -2,23 +2,6 @@
   text-align: center;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
 .blocks {
   display: inline-block;
   margin-top: 1.5em;
@@ -29,6 +12,14 @@
 
 .blocks > h3 {
   border-bottom: 1px solid lightgray;
+}
+
+.block {
+  text-align: left;
+  margin: 0.5em 5%;
+  color: black;
+  border-bottom: solid lightgray 1px;
+  display: block;
 }
 
 .submit-btn {
