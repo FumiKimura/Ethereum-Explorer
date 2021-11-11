@@ -4,9 +4,10 @@ import { useEffect, useState } from 'react';
 
 function App() {
 
+  //Hook
   const [blocks, setBlocks] = useState([]);
   const [path, setPath] = useState("all");
-  const [id, setId] = useState(0);
+  const [input, setInput] = useState(0);
   
   useEffect( async () => { 
     await ethBlocks();
@@ -16,8 +17,8 @@ function App() {
 
   async function ethBlocks(){
     //initial setup
-    const firstTenBlocks = await axios.get("https://ethereum-explorer-p6vwemgmtq-an.a.run.app/ethereum/latest/setup");
-    setBlocks(firstTenBlocks.data);
+    const initialBlocks = await axios.get("https://ethereum-explorer-p6vwemgmtq-an.a.run.app/ethereum/latest/setup");
+    setBlocks(initialBlocks.data);
   }
 
   async function autoupdate(){
@@ -30,7 +31,7 @@ function App() {
     }, 20000);
   }
 
-  
+  //Handler
   async function handleSubmit(event){
     let response;
     event.preventDefault();
@@ -41,19 +42,19 @@ function App() {
         break;
       case 'get':
         console.log("get");
-        response = await axios.get(`https://ethereum-explorer-p6vwemgmtq-an.a.run.app/${id}`);
+        response = await axios.get(`https://ethereum-explorer-p6vwemgmtq-an.a.run.app/${input}`);
         break;
       case 'post':
         console.log("post");
-        response = await axios.post(`https://ethereum-explorer-p6vwemgmtq-an.a.run.app/address/${id}`)
+        response = await axios.post(`https://ethereum-explorer-p6vwemgmtq-an.a.run.app/address/${input}`)
         break;
       case 'update':
         console.log("update");
-        response = await axios.patch(`https://ethereum-explorer-p6vwemgmtq-an.a.run.app/${id}`);
+        response = await axios.patch(`https://ethereum-explorer-p6vwemgmtq-an.a.run.app/${input}`);
         break;
       case 'delete':
         console.log("delete");
-        response = await axios.delete(`https://ethereum-explorer-p6vwemgmtq-an.a.run.app/address/${id}`);
+        response = await axios.delete(`https://ethereum-explorer-p6vwemgmtq-an.a.run.app/address/${input}`);
         break;
     }
     console.log(response);
@@ -63,10 +64,11 @@ function App() {
     setPath(event.target.value);
   }
 
-  function handleIdChange(event){
-    setId(event.target.value);
+  function handleInputChange(event){
+    setInput(event.target.value);
   }
 
+  //HTML
   return (
     <div className="App">
       <h1>Ether Finder</h1>
@@ -79,7 +81,7 @@ function App() {
             <option value="update">UPDATE Address</option>
             <option value="delete">DELETE Address</option>
           </select>
-          <input type="text" onChange={handleIdChange}/>
+          <input type="text" onChange={handleInputChange}/>
         <input type="submit" value="Submit"/>
       </form>
       
