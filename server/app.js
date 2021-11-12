@@ -94,10 +94,10 @@ app.get("/ethereum/latest/setup", async (req, res) => {
 });  
 
 app.get("/ethereum/latest/:blocknum", async (req, res) => {
-    const { blocknum } = req.params.blocknum;
+    const {blocknum} = req.params;
     const blocks = [];
 
-    res.send("in the server");
+    res.send(blocknum);
     // const latestBlockNum = await axios.post('https://mainnet.infura.io/v3/b0b3157f5e7c420dbb454144ea397263', {
     //     "id": 1337,
     //     "jsonrpc": "2.0",

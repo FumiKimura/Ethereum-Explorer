@@ -1,34 +1,30 @@
 import './App.css';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 function App() {
 
   //Hook
-  const [blocks, setBlocks] = useState([]);
+  const blocks= useRef([]);
   const [path, setPath] = useState("all");
   const [input, setInput] = useState(0);
   
-  useEffect( async () => { 
-    await ethBlocks();
-    await autoupdate();
-    console.log("end of use effect");
+  useEffect(() => { 
+    ethBlocks();
+    autoupdate();
   }, [])
 
   async function ethBlocks(){
     //initial setup
-    const initialBlocks = await axios.get("https://ethereum-explorer-p6vwemgmtq-an.a.run.app/ethereum/latest/setup");
-    setBlocks(initialBlocks.data);
+    const initialBlocks = await axios.get("http://localhost:9000/ethereum/latest/setup");
+    blocks.current = initialBlocks.data;
+    console.log(blocks.current);
   }
 
   async function autoupdate(){
     setInterval(async () => {
-      console.log("setInterval is working");
-      console.log(blocks);
-      console.log(parseInt(blocks[0]));
-      const data = await axios.get(`http://localhost:9000/ethereum/latest/:${blocks[0].number}`);
-      console.log(data.data);
-    }, 20000);
+      const data = await axios.get(`http://localhost:9000/ethereum/latest/${blocks.current[0].number}`);
+    }, 5000);
   }
 
   //Handler
@@ -87,8 +83,7 @@ function App() {
       
       <div className="blocks">
       <h3>Latest Blocks</h3>
-        {blocks.map(block => {
-          console.log(block);
+        {blocks.current.map(block => {
           return <div
             className="block"
           >
